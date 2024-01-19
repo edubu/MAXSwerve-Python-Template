@@ -1,7 +1,9 @@
 import math
+
 import wpilib
 import wpimath.geometry
 import wpimath.kinematics
+
 import swervemodule
 
 kMaxSpeed = 3.0  # 3 meters per second
@@ -14,6 +16,7 @@ class Drivetrain:
     """
 
     def __init__(self) -> None:
+        # Update location in meters of serve modules in relation to the center of the robot
         self.frontLeftLocation = wpimath.geometry.Translation2d(0.381, 0.381)
         self.frontRightLocation = wpimath.geometry.Translation2d(0.381, -0.381)
         self.backLeftLocation = wpimath.geometry.Translation2d(-0.381, 0.381)
