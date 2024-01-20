@@ -7,6 +7,7 @@ import wpimath.trajectory
 
 kWheelRadius = 0.0508
 kEncoderResolution = 4096
+#rev neo is 42 for encoder resolutionz: try this out
 kModuleMaxAngularVelocity = math.pi
 kModuleMaxAngularAcceleration = math.tau
 
