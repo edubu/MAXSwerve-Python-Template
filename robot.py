@@ -3,6 +3,7 @@ import wpimath
 import wpilib.drive
 import wpimath.filter
 import wpimath.controller
+import navx
 import drivetrain
 import networklogger
 
@@ -16,13 +17,17 @@ class MyRobot(wpilib.TimedRobot):
         """Robot initialization function"""
         self.controller = wpilib.XboxController(0)
         # self.swerve = drivetrain.Drivetrain()
-        self.networklogger = networklogger.NetworkLogger(self.controller)
+        self.networklogger = networklogger.NetworkLogger()
+
+        self.gyro = navx.AHRS(wpilib.SerialPort.Port.kUSB)
 
         # # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
         # self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         # self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         # self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
-        
+    
+    def autonomousInit(self) -> None:
+        pass
 
     def autonomousPeriodic(self) -> None:
         # self.driveWithJoystick(False)
@@ -34,11 +39,18 @@ class MyRobot(wpilib.TimedRobot):
         # self.driveWithJoystick(True)
 
         # Logging
-        self.networklogger.log_controller()
+        self.log()
+    
+    def testPeriodic(self) -> None:
+        # Logging
+        self.log()
+    
+    def log(self):
+        self.networklogger.log_controller(self.controller)
+        self.networklogger.log_gyro(self.gyro)
+
 
     def driveWithJoystick(self, fieldRelative: bool) -> None:
-
-
         # Get the x speed. We are inverting this because Xbox controllers return
         # negative values when we push forward.
         xSpeed = (
@@ -70,7 +82,6 @@ class MyRobot(wpilib.TimedRobot):
         )
 
 
-        #TODO: Add the drive after checking joystick and NetworkTable Control
         # self.swerve.drive(xSpeed, ySpeed, rot, fieldRelative, self.getPeriod())
 
 if __name__ == "__main__":

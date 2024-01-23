@@ -2,7 +2,7 @@
   "tabPane": [
     {
       "title": "SmartDashboard",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "SmartDashboard/",
       "widgetPane": {
         "gridSize": 32.0,
@@ -87,6 +87,78 @@
               "_glyph": 148,
               "_showGlyph": false,
               "Visuals/Show voltage and current values": true
+            }
+          },
+          "28,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Number Bar",
+              "_title": "LJoystickX",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "HORIZONTAL"
+            }
+          },
+          "31,0": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Number Bar",
+              "_title": "LJoystickY",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "VERTICAL"
+            }
+          },
+          "28,3": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Number Bar",
+              "_title": "RJoystickX",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "HORIZONTAL"
+            }
+          },
+          "31,3": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Number Bar",
+              "_title": "RJoystickY",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "VERTICAL"
             }
           }
         }
@@ -362,9 +434,9 @@
     }
   ],
   "windowGeometry": {
-    "x": -1928.0,
-    "y": -8.0,
-    "width": 1936.0,
-    "height": 1056.0
+    "x": -6.0,
+    "y": 5.0,
+    "width": 1920.0,
+    "height": 697.0
   }
 }
