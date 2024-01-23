@@ -15,16 +15,16 @@ robotpy_extras = [
     # "apriltag"
     # "commands2"
     # "cscore"
-    # "navx"
+    "navx"
     # "pathplannerlib"
     # "phoenix5"
     # "phoenix6"
     # "playingwithfusion"
-    # "rev"
+    "rev"
     # "romi"
     # "sim"
     # "xrp"
 ]
 
 # Other pip packages to install
-requires = ["pynetworktables"]
+requires = ["pynetworktables", "pynetconsole"]

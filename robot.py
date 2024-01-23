@@ -4,7 +4,7 @@ import wpilib.drive
 import wpimath.filter
 import wpimath.controller
 import drivetrain
-from networktables import NetworkTables
+import networklogger
 
 # To see messages from networktables, you must setup logging
 import logging
@@ -15,27 +15,30 @@ class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         """Robot initialization function"""
         self.controller = wpilib.XboxController(0)
-        self.swerve = drivetrain.Drivetrain()
+        # self.swerve = drivetrain.Drivetrain()
+        self.networklogger = networklogger.NetworkLogger(self.controller)
 
-        # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-        self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
-        self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
-        self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
-        
-        """Network Tables Initialization"""
-        NetworkTables.initialize()
-        self.sd = NetworkTables.getTable("SmartDashboard")
-        self.tuning = NetworkTables.getTable("Tuning")
+        # # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
+        # self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
+        # self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
+        # self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
         
 
     def autonomousPeriodic(self) -> None:
-        self.driveWithJoystick(False)
-        self.swerve.updateOdometry()
+        # self.driveWithJoystick(False)
+        # self.swerve.updateOdometry()
+        pass
 
     def teleopPeriodic(self) -> None:
-        self.driveWithJoystick(True)
+        # Teleop periodic logic
+        # self.driveWithJoystick(True)
+
+        # Logging
+        self.networklogger.log_controller()
 
     def driveWithJoystick(self, fieldRelative: bool) -> None:
+
+
         # Get the x speed. We are inverting this because Xbox controllers return
         # negative values when we push forward.
         xSpeed = (
@@ -66,7 +69,9 @@ class MyRobot(wpilib.TimedRobot):
             * drivetrain.kMaxSpeed
         )
 
-        self.swerve.drive(xSpeed, ySpeed, rot, fieldRelative, self.getPeriod())
+
+        #TODO: Add the drive after checking joystick and NetworkTable Control
+        # self.swerve.drive(xSpeed, ySpeed, rot, fieldRelative, self.getPeriod())
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)

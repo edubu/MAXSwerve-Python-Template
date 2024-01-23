@@ -14,13 +14,15 @@ class Drivetrain:
     """
     Represents a swerve drive style drivetrain.
     """
-
     def __init__(self) -> None:
+        self.side_length_in = 30.750
+        self.side_length_m = 0.78105
+        
         # Update location in meters of serve modules in relation to the center of the robot
-        self.frontLeftLocation = wpimath.geometry.Translation2d(0.381, 0.381)
-        self.frontRightLocation = wpimath.geometry.Translation2d(0.381, -0.381)
-        self.backLeftLocation = wpimath.geometry.Translation2d(-0.381, 0.381)
-        self.backRightLocation = wpimath.geometry.Translation2d(-0.381, -0.381)
+        self.frontLeftLocation = wpimath.geometry.Translation2d(self.side_length_m / 2, self.side_length_m / 2)
+        self.frontRightLocation = wpimath.geometry.Translation2d(self.side_length_m / 2, -self.side_length_m / 2)
+        self.backLeftLocation = wpimath.geometry.Translation2d(-self.side_length_m / 2, self.side_length_m / 2)
+        self.backRightLocation = wpimath.geometry.Translation2d(-self.side_length_m / 2, -self.side_length_m / 2)
 
         self.frontLeft = swervemodule.SwerveModule(1, 2, 0, 1, 2, 3)
         self.frontRight = swervemodule.SwerveModule(3, 4, 4, 5, 6, 7)
