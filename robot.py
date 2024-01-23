@@ -4,7 +4,12 @@ import wpilib.drive
 import wpimath.filter
 import wpimath.controller
 import drivetrain
+from networktables import NetworkTables
 
+# To see messages from networktables, you must setup logging
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
@@ -16,6 +21,12 @@ class MyRobot(wpilib.TimedRobot):
         self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
+        
+        """Network Tables Initialization"""
+        NetworkTables.initialize()
+        self.sd = NetworkTables.getTable("SmartDashboard")
+        self.tuning = NetworkTables.getTable("Tuning")
+        
 
     def autonomousPeriodic(self) -> None:
         self.driveWithJoystick(False)
