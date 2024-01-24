@@ -93,24 +93,24 @@ class DriveSubsystem:
         :param rateLimit: Whether to enable rate limiting for smoother control
         :param periodSeconds: Time
         """
-        swerveModuleStates = self.kinematics.toSwerveModuleStates(
-            wpimath.kinematics.ChassisSpeeds.discretize(
-                wpimath.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, rot, self.gyro.getRotation2d()
-                )
-                if fieldRelative
-                else wpimath.kinematics.ChassisSpeeds(xSpeed, ySpeed, rot),
-                periodSeconds,
-            )
-        )
-        wpimath.kinematics.SwerveDrive4Kinematics.desaturateWheelSpeeds(
-            swerveModuleStates, kMaxSpeed
-        )
-        self.frontLeft.setDesiredState(swerveModuleStates[0])
-        self.frontRight.setDesiredState(swerveModuleStates[1])
-        self.backLeft.setDesiredState(swerveModuleStates[2])
-        self.backRight.setDesiredState(swerveModuleStates[3])
-    
+        xSpeedCommanded = None
+        ySpeedCommanded = None
+
+        if rateLimit:
+            # Convert XY to polar for rate limiting
+            inputTranslationDir = math.atan2(ySpeed, xSpeed)
+            inputTranslationmag = math.sqrt(pow(xSpeed, 2) + pow(ySpeed, 2))
+
+            # Calculate the direction slew rate based on an estimate of lateral acceleration
+            directionSlewRate = None
+            if self.currentTranslateMag != 0.0:
+                directionSlewRate = abs(constants.kDirectionSlewRate / self.currentTranslationMag)
+            else:
+                directionSlewRate = 500.0 # some high number that means the slew rate is effectively instantaneous
+            
+            currentTime = ntcore._now() * pow(1, -6)
+            elapsedTime = currentTime - self.prevTime
+            angleDif = 
     def setX() -> None:
         pass
 
