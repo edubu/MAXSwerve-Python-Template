@@ -6,6 +6,8 @@ import wpimath.controller
 import wpimath.trajectory
 import rev
 
+import constants
+
 kWheelRadius = 0.0508
 kEncoderResolution = 4096
 #rev neo is 42 for encoder resolutionz: try this out
@@ -40,18 +42,70 @@ class SwerveModule:
         self.drivingEncoder: rev.SparkRelativeEncoder = self.drivingSparkMax.getEncoder(rev.SparkMaxRelativeEncoder.Type.kHallSensor)
         self.turningEncoder: rev.SparkAbsoluteEncoder = self.turningSparkMax.getAbsoluteEncoder(rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
-        # Apply position and velocity conversion factors for the turning encoder.
+        # Apply position and velocity conversion factors for the driving encoder.
         # We want these in radians and radians per second to use with WPILibs swerve APIs
-        self.drivingEncoder.setPositionConversionFactor()
+        self.drivingEncoder.setPositionConversionFactor(constants.kDrivingEncoderPositionFactor)
+        self.drivingEncoder.setVelocityConversionFactor(constants.kDrivingEncoderVelocityFactor)
+
+        # Apply position and velocity conversion factors for the driving encoder.
+        # We want these in radians and radians per second to use with WPILibs swerve APIs
+        self.turningEncoder.setPositionConversionFactor(constants.kTurningEncoderPositionFactor)
+        self.turningEncoder.setVelocityConversionFactor(constants.kTurningEncoderVelocityFactor)
+
+        # Invert the turning encoder, since the output shaft rotates in the opposite
+        # direction of the steering motor in the MAXSwerve Module.
+        self.turningEncoder.setInverted(constants.kTurningEncoderInverted)
 
         """ Initialize PID Controllers"""
         # create spark max pid controllers
         self.drivingPIDController: rev.SparkPIDController = self.drivingSparkMax.getPIDController()
         self.turningPIDController: rev.SparkPIDController = self.turningSparkMax.getPIDController()
 
+        # Enable PID wrap around for the turning motor. This will allow the PID
+        # controller to go through 0 to get to the setpoint i.e. going from 350
+        # degrees to 10 degrees will go through 0 rather than the other direction
+        #  which is a longer route.
+        self.turningPIDController.setPositionPIDWrappingEnabled(True)
+        self.turningPIDController.setPositionPIDWrappingMinInput(
+            constants.kTurningEncoderPositionPIDMinInput)
+        self.turningPIDController.setPositionPIDWrappingMaxInput(
+            constants.kTurningEncoderPositionPIDMaxInput)
+        
+        # Set the PID Controller to use the duty cycle encoder on the swerve
+        # module instead of the built in NEO550 encoder.
+        self.turningPIDController.setFeedbackDevice(self.turningEncoder)
+
+        # Set the PID gains for the driving motor. Note these are example gains, and
+        # you may need to tune them for your own robot!
+        self.drivingPIDController.setP(constants.kDrivingP)
+        self.drivingPIDController.setI(constants.kDrivingI)
+        self.drivingPIDController.setD(constants.kDrivingD)
+        self.drivingPIDController.setFF(constants.kDrivingFF)
+        self.drivingPIDController.setOutputRange(constants.kDrivingMinOutput, constants.kDrivingMaxOutput)
+
+        # Set the PID gains for the turning motor. Note these are example gains, and
+        # you may need to tune them for your own robot!
+        self.turningPIDController.setP(constants.kTurningP)
+        self.turningPIDController.setI(constants.kTurningI)
+        self.turningPIDController.setD(constants.kTurningD)
+        self.turningPIDController.setFF(constants.kTurningFF)
+        self.turningPIDController.setOutputRange(constants.kTurningMinOutput, constants.kTurningMaxOutput)
+
+        """ Spark Max Mode Parameters"""
+        self.drivingSparkMax.setIdleMode(constants.kDrivingMotorIdleMode)
+        self.turningSparkMax.setIdleMode(constants.kTurningMotorIdleMode)
+        self.drivingSparkMax.setSmartCurrentLimit(constants.kDrivingMotorCurrentLimit)
+        self.turningSparkMax.setSmartCurrentLimit(constants.kDrivingMotorCurrentLimit)
+
+        # Save the SPARK MAX configurations. If a SPARK MAX browns out during
+        # operation, it will maintain the above configurations
+        self.drivingSparkMax.burnFlash()
+        self.turningSparkMax.burnFlash()
+
         # Swerve drive parameters
-        self.chassisAngularOffset = 0
-        self.desiredState = wpimath.kinematics.SwerveModuleState(0.0, wpimath.geometry.Rotation2d())
+        self.chassisAngularOffset = chassisAngularOffset
+        self.desiredState.angle = wpimath.kinematics.SwerveModuleState(0.0, wpimath.geometry.Rotation2d(self.turningEncoder.getPosition()))
+        self.drivingEncoder.setPosition(0)
 
     def getState(self) -> wpimath.kinematics.SwerveModuleState:
         """Returns the current state of the module.
