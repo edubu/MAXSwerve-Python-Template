@@ -104,7 +104,7 @@ class SwerveModule:
 
         # Swerve drive parameters
         self.chassisAngularOffset = chassisAngularOffset
-        self.desiredState.angle = wpimath.kinematics.SwerveModuleState(0.0, wpimath.geometry.Rotation2d(self.turningEncoder.getPosition()))
+        self.desiredState = wpimath.kinematics.SwerveModuleState(0.0, wpimath.geometry.Rotation2d(self.turningEncoder.getPosition()))
         self.drivingEncoder.setPosition(0)
 
     def getState(self) -> wpimath.kinematics.SwerveModuleState:
@@ -113,8 +113,8 @@ class SwerveModule:
         :returns: The current state of the module.
         """
         return wpimath.kinematics.SwerveModuleState(
-            self.driveEncoder.getRate(),
-            wpimath.geometry.Rotation2d(self.turningEncoder.getDistance()),
+            self.drivingEncoder.getVelocity(),
+            wpimath.geometry.Rotation2d(self.turningEncoder.getPosition() - self.chassisAngularOffset),
         )
 
     def getPosition(self) -> wpimath.kinematics.SwerveModulePosition:
@@ -123,8 +123,8 @@ class SwerveModule:
         :returns: The current position of the module.
         """
         return wpimath.kinematics.SwerveModulePosition(
-            self.driveEncoder.getRate(),
-            wpimath.geometry.Rotation2d(self.turningEncoder.getDistance()),
+            self.drivingEncoder.getPosition(),
+            wpimath.geometry.Rotation2d(self.turningEncoder.getPosition() - self.chassisAngularOffset),
         )
 
     def setDesiredState(
@@ -134,34 +134,20 @@ class SwerveModule:
 
         :param desiredState: Desired state with speed and angle.
         """
+        # Apply chassis angular offset to the desired state
+        correctedDesiredState = wpimath.kinematics.SwerveModuleState(desiredState.speed, desiredState.angle + wpimath.geometry.Rotation2d(self.chassisAngularOffset))
 
-        encoderRotation = wpimath.geometry.Rotation2d(self.turningEncoder.getDistance())
-
+        turningEncoderPosition = wpimath.geometry.Rotation2d(self.turningEncoder.getPosition())
         # Optimize the reference state to avoid spinning further than 90 degrees
-        state = wpimath.kinematics.SwerveModuleState.optimize(
-            desiredState, encoderRotation
+        optimizedDesiredState = wpimath.kinematics.SwerveModuleState.optimize(
+            correctedDesiredState, turningEncoderPosition
         )
 
-        # Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
-        # direction of travel that can occur when modules change directions. This results in smoother
-        # driving.
-        state.speed *= (state.angle - encoderRotation).cos()
+        # Command driving and turning SPARK MAX toward their respective setpoints
+        self.drivingPIDController.setReference(optimizedDesiredState.speed, rev.CANSparkMax.ControlType.kVelocity)
+        self.turningPIDController.setReference(optimizedDesiredState.angle.radians(), rev.CANSparkMax.ControlType.kPosition)
 
-        # Calculate the drive output from the drive PID controller.
-        driveOutput = self.drivePIDController.calculate(
-            self.driveEncoder.getRate(), state.speed
-        )
+        self.desiredState = desiredState
 
-        driveFeedforward = self.driveFeedforward.calculate(state.speed)
-
-        # Calculate the turning motor output from the turning PID controller.
-        turnOutput = self.turningPIDController.calculate(
-            self.turningEncoder.getDistance(), state.angle.radians()
-        )
-
-        turnFeedforward = self.turnFeedforward.calculate(
-            self.turningPIDController.getSetpoint().velocity
-        )
-
-        self.driveMotor.setVoltage(driveOutput + driveFeedforward)
-        self.turningMotor.setVoltage(turnOutput + turnFeedforward)
+    def resetEncoders(self) -> None:
+        self.drivingEncoder.setPosition(0)

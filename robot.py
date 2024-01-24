@@ -4,7 +4,7 @@ import wpilib.drive
 import wpimath.filter
 import wpimath.controller
 import navx
-import drivetrain
+import drivesubsystem
 import networklogger
 
 # To see messages from networktables, you must setup logging
@@ -16,10 +16,8 @@ class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         """Robot initialization function"""
         self.controller = wpilib.XboxController(0)
-        self.swerve = drivetrain.Drivetrain()
+        self.swerve = drivesubsystem.Drivetrain()
         self.networklogger = networklogger.NetworkLogger()
-
-        self.gyro = navx.AHRS(wpilib.SerialPort.Port.kUSB)
 
         # # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
         # self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
@@ -47,7 +45,7 @@ class MyRobot(wpilib.TimedRobot):
     
     def log(self):
         self.networklogger.log_controller(self.controller)
-        self.networklogger.log_gyro(self.gyro)
+        # self.networklogger.log_gyro(self.gyro)
 
 
     def driveWithJoystick(self, fieldRelative: bool) -> None:
@@ -57,7 +55,7 @@ class MyRobot(wpilib.TimedRobot):
             -self.xspeedLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getLeftY(), 0.02)
             )
-            * drivetrain.kMaxSpeed
+            * drivesubsystem.kMaxSpeed
         )
 
         # Get the y speed or sideways/strafe speed. We are inverting this because
@@ -67,7 +65,7 @@ class MyRobot(wpilib.TimedRobot):
             -self.yspeedLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getLeftX(), 0.02)
             )
-            * drivetrain.kMaxSpeed
+            * drivesubsystem.kMaxSpeed
         )
 
         # Get the rate of angular rotation. We are inverting this because we want a
@@ -78,7 +76,7 @@ class MyRobot(wpilib.TimedRobot):
             -self.rotLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getRightX(), 0.02)
             )
-            * drivetrain.kMaxSpeed
+            * drivesubsystem.kMaxSpeed
         )
 
 
