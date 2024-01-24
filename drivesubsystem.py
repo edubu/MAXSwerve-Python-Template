@@ -10,6 +10,7 @@ import navx
 
 import swervemodule
 import constants
+import swerveutils
 
 
 class DriveSubsystem:
@@ -99,7 +100,7 @@ class DriveSubsystem:
         if rateLimit:
             # Convert XY to polar for rate limiting
             inputTranslationDir = math.atan2(ySpeed, xSpeed)
-            inputTranslationmag = math.sqrt(pow(xSpeed, 2) + pow(ySpeed, 2))
+            inputTranslationMag = math.sqrt(pow(xSpeed, 2) + pow(ySpeed, 2))
 
             # Calculate the direction slew rate based on an estimate of lateral acceleration
             directionSlewRate = None
@@ -110,44 +111,88 @@ class DriveSubsystem:
             
             currentTime = ntcore._now() * pow(1, -6)
             elapsedTime = currentTime - self.prevTime
-            angleDif = 
-    def setX() -> None:
-        pass
+            angleDif = swerveutils.angleDifference(inputTranslationDir, self.currentTranslationDir)
 
-    def resetEncoders() -> None:
-        pass
+            if angleDif < 0.45 * math.pi:
+                self.currentTranslationDir = swerveutils.stepTowardsCircular(self.currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime)
+                self.currentTranslateMag = self.magLimiter.calculate(inputTranslationMag)
+            elif angleDif > 0.85 * math.pi:
+                if self.currentTranslateMag > 1e-4:
+                    self.currentTranslateMag = self.magLimiter.calculate(0.0)
+                else:
+                    self.currentTranslationDir = swerveutils.wrapAngle(self.currentTranslationDir + math.pi)
+                    self.currentTranslateMag = self.magLimiter.calculate(inputTranslationMag)
+            else:
+                self.currentTranslationDir = swerveutils.stepTowardsCircular(self.currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime)
+                self.currentTranslateMag = self.magLimiter.calculate(0.0)
+            
+            self.prevTime = currentTime
 
-    def setModuleStates(desiredStates: list[wpimath.kinematics.SwerveModuleState]) -> None:
-        pass
+            xSpeedCommanded = self.currentTranslateMag * math.cos(self.currentTranslationDir)
+            ySpeedCommanded = self.currentTranslateMag * math.sin(self.currentTranslationDir)
+            self.currentRotation = self.rotLimiter.calculate(rot)
+        else:
+            xSpeedCommanded = xSpeed
+            ySpeedCommanded = ySpeed
+            self.currentRotation = rot
+        
+        # Convert the commanded speeds into correct units for the drivetrain
+        xSpeedDelivered = xSpeedCommanded * constants.kMaxSpeed
+        ySpeedDelivered = ySpeedCommanded * constants.kMaxSpeed
+        rotDelivered = self.currentRotation * constants.kMaxAngularSpeed
+
+        (fl, fr, bl, br) = self.kDriveKinematics.toSwerveModuleStates(
+            wpimath.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeedDelivered, ySpeedDelivered, rotDelivered, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle()))
+            ) if fieldRelative 
+            else wpimath.kinematics.ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
+        )
+
+
+        # Set the swerve modules to desired states
+        self.frontLeft.setDesiredState(fl)
+        self.frontRight.setDesiredState(fr)
+        self.rearLeft.setDesiredState(bl)
+        self.rearRight.setDesiredState(br)
+
+
+
+    def setX(self) -> None:
+        self.frontLeft.setDesiredState(wpimath.kinematics.SwerveModuleState(0, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(45))))
+        self.frontRight.setDesiredState(wpimath.kinematics.SwerveModuleState(0, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(-45))))
+        self.rearLeft.setDesiredState(wpimath.kinematics.SwerveModuleState(0, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(-45))))
+        self.rearRight.setDesiredState(wpimath.kinematics.SwerveModuleState(0, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(45))))
+
+    def setModuleStates(self, desiredStates: tuple[wpimath.kinematics.SwerveModuleState]) -> None:
+        self.kDriveKinematics.desaturateWheelSpeeds(desiredStates, constants.kMaxSpeed)
+
+        self.frontLeft.setDesiredState(desiredStates[0])
+        self.frontRight.setDesiredState(desiredStates[1])
+        self.rearLeft.setDesiredState(desiredStates[2])
+        self.rearRight.setDesiredState(desiredStates[3])
+
+    def resetEncoders(self) -> None:
+        self.frontLeft.resetEncoders()
+        self.rearLeft.resetEncoders()
+        self.frontRight.resetEncoders()
+        self.rearRight.resetEncoders()
 
     # Returns the robot's heading in degrees from 180 to 180
-    def getHeading() -> float:
-        pass
+    def getHeading(self) -> float:
+        return wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())).degrees()
 
     # Zeroes the heading of the robot
-    def zeroHeading() -> None:
-        pass 
+    def zeroHeading(self) -> None:
+        self.gyro.reset()
 
     # Returns the turn rate of the robot in degrees per second
-    def getTurnRate() -> float:
-        pass
+    def getTurnRate(self) -> float:
+        return -self.gyro.getRate()
 
     # returns the currently-estimated pose
-    def getPose() -> wpimath.geometry.Pose2d:
-        pass
+    def getPose(self) -> wpimath.geometry.Pose2d:
+        return self.odometry.getPose()
     
     # Resets the odometry to the specified pose
-    def resetOdometry(pose: wpimath.geometry.Pose2d):
-        pass
-
-    def updateOdometry(self) -> None:
-        """Updates the field relative position of the robot."""
-        self.odometry.update(
-            self.gyro.getRotation2d(),
-            (
-                self.frontLeft.getPosition(),
-                self.frontRight.getPosition(),
-                self.backLeft.getPosition(),
-                self.backRight.getPosition(),
-            ),
-        )
+    def resetOdometry(self, pose: wpimath.geometry.Pose2d):
+        self.odometry.resetPosition(self.getHeading(), (self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(), self.rearRight.getPosition()), pose)
