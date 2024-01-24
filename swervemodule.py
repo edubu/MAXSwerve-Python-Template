@@ -17,21 +17,34 @@ class SwerveModule:
     def __init__(
         self,
         driveMotorChannel: int,
-        turningMotorChannel: int
+        turningMotorChannel: int,
+        chassisAngularOffset: float
     ) -> None:
         """Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
 
         :param driveMotorChannel:      PWM output for the drive motor.
         :param turningMotorChannel:    PWM output for the turning motor.
         """
-        # Init Spark Max motor controllers
+
+        """ Initialize Spark Max motor controllers"""
         self.drivingSparkMax: rev.CANSparkMax = rev.CANSparkMax(driveMotorChannel)
         self.turningSparkMax: rev.CANSparkMax = rev.CANSparkMax(turningMotorChannel)
 
-        # Get Encoder values from Spark Maxes
+        # Factory reset, so we get the SPARKS MAX to a known state before configuring
+        # them. This is useful in case a SPARK MAX is swapped out.
+        self.drivingSparkMax.restoreFactoryDefaults()
+        self.turningSparkMax.restoreFactoryDefaults()
+
+        """ Initialize Spark Max encoders"""
+        # Get Encoder Objects from Spark Max
         self.drivingEncoder: rev.SparkRelativeEncoder = self.drivingSparkMax.getEncoder(rev.SparkMaxRelativeEncoder.Type.kHallSensor)
         self.turningEncoder: rev.SparkAbsoluteEncoder = self.turningSparkMax.getAbsoluteEncoder(rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
+        # Apply position and velocity conversion factors for the turning encoder.
+        # We want these in radians and radians per second to use with WPILibs swerve APIs
+        self.drivingEncoder.setPositionConversionFactor()
+
+        """ Initialize PID Controllers"""
         # create spark max pid controllers
         self.drivingPIDController: rev.SparkPIDController = self.drivingSparkMax.getPIDController()
         self.turningPIDController: rev.SparkPIDController = self.turningSparkMax.getPIDController()
