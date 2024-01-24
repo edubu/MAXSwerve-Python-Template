@@ -16,7 +16,7 @@ class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         """Robot initialization function"""
         self.controller = wpilib.XboxController(0)
-        # self.swerve = drivetrain.Drivetrain()
+        self.swerve = drivetrain.Drivetrain()
         self.networklogger = networklogger.NetworkLogger()
 
         self.gyro = navx.AHRS(wpilib.SerialPort.Port.kUSB)

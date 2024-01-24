@@ -91,11 +91,12 @@
           },
           "28,0": {
             "size": [
-              3,
+              4,
               3
             ],
             "content": {
               "_type": "Number Bar",
+              "_source0": "network_table:///Controller/LJoystickX",
               "_title": "LJoystickX",
               "_glyph": 148,
               "_showGlyph": false,
@@ -107,13 +108,14 @@
               "Visuals/Orientation": "HORIZONTAL"
             }
           },
-          "31,0": {
+          "32,0": {
             "size": [
               3,
-              3
+              4
             ],
             "content": {
               "_type": "Number Bar",
+              "_source0": "network_table:///Controller/LJoystickY",
               "_title": "LJoystickY",
               "_glyph": 148,
               "_showGlyph": false,
@@ -125,13 +127,14 @@
               "Visuals/Orientation": "VERTICAL"
             }
           },
-          "28,3": {
+          "28,4": {
             "size": [
-              3,
+              4,
               3
             ],
             "content": {
               "_type": "Number Bar",
+              "_source0": "network_table:///Controller/RJoystickX",
               "_title": "RJoystickX",
               "_glyph": 148,
               "_showGlyph": false,
@@ -143,13 +146,14 @@
               "Visuals/Orientation": "HORIZONTAL"
             }
           },
-          "31,3": {
+          "32,4": {
             "size": [
               3,
-              3
+              4
             ],
             "content": {
               "_type": "Number Bar",
+              "_source0": "network_table:///Controller/RJoystickY",
               "_title": "RJoystickY",
               "_glyph": 148,
               "_showGlyph": false,
@@ -165,11 +169,11 @@
       }
     },
     {
-      "title": "PID Tuning Front",
+      "title": "Debug",
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
-        "gridSize": 32.0,
+        "gridSize": 128.0,
         "showGrid": true,
         "hgap": 16.0,
         "vgap": 16.0,
@@ -177,256 +181,95 @@
         "tiles": {
           "0,0": {
             "size": [
-              7,
-              7
+              1,
+              1
             ],
             "content": {
-              "_type": "Graph",
-              "_title": "Front Left Wheel Angle",
+              "_type": "Number Bar",
+              "_source0": "network_table:///Controller/LJoystickX",
+              "_title": "LJoystickX",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "HORIZONTAL"
             }
           },
-          "7,0": {
+          "1,0": {
             "size": [
-              7,
-              7
+              1,
+              1
             ],
             "content": {
-              "_type": "Graph",
-              "_title": "Front Left Wheel Velocity",
+              "_type": "Number Bar",
+              "_source0": "network_table:///Controller/LJoystickY",
+              "_title": "LJoystickY",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "VERTICAL"
             }
           },
-          "0,7": {
+          "0,1": {
             "size": [
-              3,
-              4
+              1,
+              1
             ],
             "content": {
-              "_type": "PID Controller",
-              "_title": "PID FL Angle",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID FL Velocity",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "14,0": {
-            "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Front Right Wheel Angle",
+              "_type": "Number Bar",
+              "_source0": "network_table:///Controller/RJoystickX",
+              "_title": "RJoystickX",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "HORIZONTAL"
             }
           },
-          "21,0": {
+          "1,1": {
             "size": [
-              7,
-              7
+              1,
+              1
             ],
             "content": {
-              "_type": "Graph",
-              "_title": "Front Right Wheel Velocity",
+              "_type": "Number Bar",
+              "_source0": "network_table:///Controller/RJoystickY",
+              "_title": "RJoystickY",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Range/Min": -1.0,
+              "Range/Max": 1.0,
+              "Range/Center": 0.0,
+              "Visuals/Num tick marks": 5,
+              "Visuals/Show text": true,
+              "Visuals/Orientation": "VERTICAL"
             }
           },
-          "14,7": {
+          "2,0": {
             "size": [
-              3,
-              4
+              2,
+              2
             ],
             "content": {
-              "_type": "PID Controller",
-              "_title": "PID FR Angle",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "21,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID FR Velocity",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          }
-        }
-      }
-    },
-    {
-      "title": "PID Tuning Back",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 32.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "0,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID BL Angle",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID BL Velocity",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "14,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID BR Angle",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "21,7": {
-            "size": [
-              3,
-              4
-            ],
-            "content": {
-              "_type": "PID Controller",
-              "_title": "PID BR Velocity",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "7,0": {
-            "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Back Left Wheel Velocity",
+              "_type": "Gyro",
+              "_source0": "network_table:///Robot/Angle",
+              "_title": "Gyro Angle",
               "_glyph": 148,
               "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
-            }
-          },
-          "0,0": {
-            "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Back Left Wheel Angle",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
-            }
-          },
-          "14,0": {
-            "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Back Right Wheel Angle",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
-            }
-          },
-          "21,0": {
-            "size": [
-              7,
-              7
-            ],
-            "content": {
-              "_type": "Graph",
-              "_title": "Back Right Wheel Velocity",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": true,
-              "Y-axis/Upper bound": 1.0,
-              "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Visuals/Major tick spacing": 45.0,
+              "Visuals/Starting angle": 180.0,
+              "Visuals/Show tick mark ring": true,
+              "Visuals/Counter clockwise": false
             }
           }
         }

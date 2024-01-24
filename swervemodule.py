@@ -4,6 +4,7 @@ import wpimath.kinematics
 import wpimath.geometry
 import wpimath.controller
 import wpimath.trajectory
+import rev
 
 kWheelRadius = 0.0508
 kEncoderResolution = 4096
@@ -16,62 +17,28 @@ class SwerveModule:
     def __init__(
         self,
         driveMotorChannel: int,
-        turningMotorChannel: int,
-        driveEncoderChannelA: int,
-        driveEncoderChannelB: int,
-        turningEncoderChannelA: int,
-        turningEncoderChannelB: int,
+        turningMotorChannel: int
     ) -> None:
         """Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
 
         :param driveMotorChannel:      PWM output for the drive motor.
         :param turningMotorChannel:    PWM output for the turning motor.
-        :param driveEncoderChannelA:   DIO input for the drive encoder channel A
-        :param driveEncoderChannelB:   DIO input for the drive encoder channel B
-        :param turningEncoderChannelA: DIO input for the turning encoder channel A
-        :param turningEncoderChannelB: DIO input for the turning encoder channel B
         """
-        self.driveMotor = wpilib.PWMSparkMax(driveMotorChannel)
-        self.turningMotor = wpilib.PWMSparkMax(turningMotorChannel)
+        # Init Spark Max motor controllers
+        self.drivingSparkMax: rev.CANSparkMax = rev.CANSparkMax(driveMotorChannel)
+        self.turningSparkMax: rev.CANSparkMax = rev.CANSparkMax(turningMotorChannel)
 
-        self.driveEncoder = wpilib.Encoder(driveEncoderChannelA, driveEncoderChannelB)
-        self.turningEncoder = wpilib.Encoder(
-            turningEncoderChannelA, turningEncoderChannelB
-        )
+        # Get Encoder values from Spark Maxes
+        self.drivingEncoder: rev.SparkRelativeEncoder = self.drivingSparkMax.getEncoder(rev.SparkMaxRelativeEncoder.Type.kHallSensor)
+        self.turningEncoder: rev.SparkAbsoluteEncoder = self.turningSparkMax.getAbsoluteEncoder(rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
 
-        # Gains are for example purposes only - must be determined for your own robot!
-        self.drivePIDController = wpimath.controller.PIDController(1, 0, 0)
+        # create spark max pid controllers
+        self.drivingPIDController: rev.SparkPIDController = self.drivingSparkMax.getPIDController()
+        self.turningPIDController: rev.SparkPIDController = self.turningSparkMax.getPIDController()
 
-        # Gains are for example purposes only - must be determined for your own robot!
-        self.turningPIDController = wpimath.controller.ProfiledPIDController(
-            1,
-            0,
-            0,
-            wpimath.trajectory.TrapezoidProfile.Constraints(
-                kModuleMaxAngularVelocity,
-                kModuleMaxAngularAcceleration,
-            ),
-        )
-
-        # Gains are for example purposes only - must be determined for your own robot!
-        self.driveFeedforward = wpimath.controller.SimpleMotorFeedforwardMeters(1, 3)
-        self.turnFeedforward = wpimath.controller.SimpleMotorFeedforwardMeters(1, 0.5)
-
-        # Set the distance per pulse for the drive encoder. We can simply use the
-        # distance traveled for one rotation of the wheel divided by the encoder
-        # resolution.
-        self.driveEncoder.setDistancePerPulse(
-            math.tau * kWheelRadius / kEncoderResolution
-        )
-
-        # Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-        # This is the the angle through an entire rotation (2 * pi) divided by the
-        # encoder resolution.
-        self.turningEncoder.setDistancePerPulse(math.tau / kEncoderResolution)
-
-        # Limit the PID Controller's input range between -pi and pi and set the input
-        # to be continuous.
-        self.turningPIDController.enableContinuousInput(-math.pi, math.pi)
+        # Swerve drive parameters
+        self.chassisAngularOffset = 0
+        self.desiredState = wpimath.kinematics.SwerveModuleState(0.0, wpimath.geometry.Rotation2d())
 
     def getState(self) -> wpimath.kinematics.SwerveModuleState:
         """Returns the current state of the module.
