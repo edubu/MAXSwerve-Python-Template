@@ -19,10 +19,10 @@ class MyRobot(wpilib.TimedRobot):
         self.swerve = drivesubsystem.Drivetrain()
         self.networklogger = networklogger.NetworkLogger()
 
-        # # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-        # self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
-        # self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
-        # self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
+        # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
+        self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
+        self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
+        self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
     
     def autonomousInit(self) -> None:
         pass
@@ -34,7 +34,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopPeriodic(self) -> None:
         # Teleop periodic logic
-        # self.driveWithJoystick(True)
+        self.driveWithJoystick(True)
 
         # Logging
         self.log()
@@ -45,7 +45,6 @@ class MyRobot(wpilib.TimedRobot):
     
     def log(self):
         self.networklogger.log_controller(self.controller)
-        # self.networklogger.log_gyro(self.gyro)
 
 
     def driveWithJoystick(self, fieldRelative: bool) -> None:
@@ -55,7 +54,7 @@ class MyRobot(wpilib.TimedRobot):
             -self.xspeedLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getLeftY(), 0.02)
             )
-            * drivesubsystem.kMaxSpeed
+            # * drivesubsystem.kMaxSpeed
         )
 
         # Get the y speed or sideways/strafe speed. We are inverting this because
@@ -65,7 +64,7 @@ class MyRobot(wpilib.TimedRobot):
             -self.yspeedLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getLeftX(), 0.02)
             )
-            * drivesubsystem.kMaxSpeed
+            # * drivesubsystem.kMaxSpeed
         )
 
         # Get the rate of angular rotation. We are inverting this because we want a
@@ -76,11 +75,11 @@ class MyRobot(wpilib.TimedRobot):
             -self.rotLimiter.calculate(
                 wpimath.applyDeadband(self.controller.getRightX(), 0.02)
             )
-            * drivesubsystem.kMaxSpeed
+            # * drivesubsystem.kMaxSpeed
         )
 
 
-        # self.swerve.drive(xSpeed, ySpeed, rot, fieldRelative, self.getPeriod())
+        self.swerve.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit=True)
 
 if __name__ == "__main__":
     wpilib.run(MyRobot)
