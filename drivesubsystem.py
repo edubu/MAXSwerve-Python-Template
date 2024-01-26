@@ -63,10 +63,13 @@ class DriveSubsystem:
         # 4 defines the number of modules
         self.odometry = wpimath.kinematics.SwerveDrive4Odometry(
             self.kDriveKinematics,
-            wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())),
+            # wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())),
+            self.gyro.getRotation2d(),
             (self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(), self.rearRight.getPosition()),
             wpimath.geometry.Pose2d()
         )
+
+        self.resetEncoders()
 
         # logger object for sending data to smart dashboard
         self.logger = networklogger.NetworkLogger()
@@ -75,12 +78,12 @@ class DriveSubsystem:
 
     def periodic(self):
         self.odometry.update(
-            wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())),
+            # wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())),
+            self.gyro.getRotation2d(),
             (self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(), self.rearRight.getPosition()),
         )
 
-        # logging periodically
-        self.logger.log_gyro(self.gyro)
+        #self.logger.log_gyro(self.gyro.getAngle())
 
 
 
@@ -150,7 +153,7 @@ class DriveSubsystem:
 
         (fl, fr, bl, br) = self.kDriveKinematics.toSwerveModuleStates(
             wpimath.kinematics.ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeedDelivered, ySpeedDelivered, rotDelivered, wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle()))
+                xSpeedDelivered, ySpeedDelivered, rotDelivered, self.gyro.getRotation2d()#wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle()))
             ) if fieldRelative 
             else wpimath.kinematics.ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered)
         )
@@ -184,9 +187,10 @@ class DriveSubsystem:
         self.frontRight.resetEncoders()
         self.rearRight.resetEncoders()
 
-    # Returns the robot's heading in degrees from 180 to 180
+    # Returns the robot's heading in degrees from -180 to 180
     def getHeading(self) -> float:
-        return wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())).degrees()
+        return self.gyro.getRotation2d().degrees()
+        # return wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())).degrees()
 
     # Zeroes the heading of the robot
     def zeroHeading(self) -> None:

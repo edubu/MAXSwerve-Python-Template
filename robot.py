@@ -45,11 +45,12 @@ class MyRobot(wpilib.TimedRobot):
         self.driveWithJoystick(True)
         
         # Logic to limit PERIODIC EVENTS
-        if self.logTimer.hasElapsed(1.0/self.logging_rate):
-            self.swerve.periodic()
-            self.networklogger.log_controller(self.controller)
-            self.logTimer.reset()
-            self.logTimer.start()
+        # if self.logTimer.advanceIfElapsed(1.0/self.logging_rate):
+        self.swerve.periodic()
+        self.networklogger.log_controller(self.controller)
+
+        # # restart timer
+        # self.logTimer.reset()
 
         
     
@@ -61,7 +62,7 @@ class MyRobot(wpilib.TimedRobot):
         # negative values when we push forward.
         xSpeed = (
             -self.xspeedLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getLeftY(), 0.02)
+                wpimath.applyDeadband(self.controller.getLeftY(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
@@ -71,7 +72,7 @@ class MyRobot(wpilib.TimedRobot):
         # return positive values when you pull to the right by default.
         ySpeed = (
             -self.yspeedLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getLeftX(), 0.02)
+                wpimath.applyDeadband(self.controller.getLeftX(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
@@ -82,7 +83,7 @@ class MyRobot(wpilib.TimedRobot):
         # the right by default.
         rot = (
             -self.rotLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getRightX(), 0.02)
+                wpimath.applyDeadband(self.controller.getRightX(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
