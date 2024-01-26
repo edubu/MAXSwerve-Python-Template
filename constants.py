@@ -42,7 +42,7 @@ kTurningEncoderInverted = True
 
 # The MaxSwerve module can be configured with one of the three pinion gears: 12T, 13T, or 14T.
 # This changes the drive speed of the module ( a pinion gear with more teeth will result in a robot that drives faster)
-kDrivingMotorPinionTeeth = 14
+kDrivingMotorPinionTeeth = 13
 
 # Calculations required for driving motor conversion factors and feed forward
 kDrivingMotorFreeSpeedRps = 5676.0 / 60
@@ -95,7 +95,7 @@ kThetaControllerConstraints = wpimath.trajectory.TrapezoidProfile.Constraints(kM
 
 """ OI Constants """
 kDriverControllerPort = 0
-kDriveDeadband = 0.05
+kDriveDeadband = 0.08
 
 
 

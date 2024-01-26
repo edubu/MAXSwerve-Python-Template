@@ -9,15 +9,16 @@ import navx
 
     Abstracts the network table logging interface
 """
+
+# Get the default instance of NetworkTables that was created automatically
+# when the robot program starts
+inst = ntcore.NetworkTableInstance.getDefault()
+inst.startServer()
+
 class NetworkLogger:
     def __init__(self) -> None:
         # Initialize the subsystems for logging
         self.pdp = wpilib.PowerDistribution()
-
-        # Get the default instance of NetworkTables that was created automatically
-        # when the robot program starts
-        inst = ntcore.NetworkTableInstance.getDefault()
-        inst.startServer()
 
         # Get the table within that instance that contains the data. There can
         # be as many tables as you like and exist to make it easier to organize

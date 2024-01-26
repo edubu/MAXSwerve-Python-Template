@@ -29,8 +29,8 @@ class SwerveModule:
         """
 
         """ Initialize Spark Max motor controllers"""
-        self.drivingSparkMax: rev.CANSparkMax = rev.CANSparkMax(driveMotorChannel)
-        self.turningSparkMax: rev.CANSparkMax = rev.CANSparkMax(turningMotorChannel)
+        self.drivingSparkMax: rev.CANSparkMax = rev.CANSparkMax(driveMotorChannel, rev.CANSparkMax.MotorType.kBrushless)
+        self.turningSparkMax: rev.CANSparkMax = rev.CANSparkMax(turningMotorChannel, rev.CANSparkMax.MotorType.kBrushless)
 
         # Factory reset, so we get the SPARKS MAX to a known state before configuring
         # them. This is useful in case a SPARK MAX is swapped out.

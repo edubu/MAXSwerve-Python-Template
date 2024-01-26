@@ -11,6 +11,7 @@ import navx
 import swervemodule
 import constants
 import swerveutils
+import networklogger
 
 class DriveSubsystem:
     """
@@ -51,7 +52,7 @@ class DriveSubsystem:
         # Slew rate filter variables for controlling the lateral acceleration
         self.currentRotation = 0.0
         self.currentTranslationDir = 0.0
-        self.currentTranslateMag = 0.0
+        self.currentTranslationMag = 0.0
 
         self.magLimiter = wpimath.filter.SlewRateLimiter(constants.kMagnitudeSlewRate / 1)
         self.rotLimiter = wpimath.filter.SlewRateLimiter(constants.kRotationalSlewRate / 1)
@@ -67,6 +68,9 @@ class DriveSubsystem:
             wpimath.geometry.Pose2d()
         )
 
+        # logger object for sending data to smart dashboard
+        self.logger = networklogger.NetworkLogger()
+
 
 
     def periodic(self):
@@ -74,6 +78,9 @@ class DriveSubsystem:
             wpimath.geometry.Rotation2d(wpimath.units.degreesToRadians(self.gyro.getAngle())),
             (self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(), self.rearRight.getPosition()),
         )
+
+        # logging periodically
+        self.logger.log_gyro(self.gyro)
 
 
 
@@ -104,7 +111,7 @@ class DriveSubsystem:
 
             # Calculate the direction slew rate based on an estimate of lateral acceleration
             directionSlewRate = None
-            if self.currentTranslateMag != 0.0:
+            if self.currentTranslationMag != 0.0:
                 directionSlewRate = abs(constants.kDirectionSlewRate / self.currentTranslationMag)
             else:
                 directionSlewRate = 500.0 # some high number that means the slew rate is effectively instantaneous
@@ -115,21 +122,21 @@ class DriveSubsystem:
 
             if angleDif < 0.45 * math.pi:
                 self.currentTranslationDir = swerveutils.stepTowardsCircular(self.currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime)
-                self.currentTranslateMag = self.magLimiter.calculate(inputTranslationMag)
+                self.currentTranslationMag = self.magLimiter.calculate(inputTranslationMag)
             elif angleDif > 0.85 * math.pi:
-                if self.currentTranslateMag > 1e-4:
-                    self.currentTranslateMag = self.magLimiter.calculate(0.0)
+                if self.currentTranslationMag > 1e-4:
+                    self.currentTranslationMag = self.magLimiter.calculate(0.0)
                 else:
                     self.currentTranslationDir = swerveutils.wrapAngle(self.currentTranslationDir + math.pi)
-                    self.currentTranslateMag = self.magLimiter.calculate(inputTranslationMag)
+                    self.currentTranslationMag = self.magLimiter.calculate(inputTranslationMag)
             else:
                 self.currentTranslationDir = swerveutils.stepTowardsCircular(self.currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime)
-                self.currentTranslateMag = self.magLimiter.calculate(0.0)
+                self.currentTranslationMag = self.magLimiter.calculate(0.0)
             
             self.prevTime = currentTime
 
-            xSpeedCommanded = self.currentTranslateMag * math.cos(self.currentTranslationDir)
-            ySpeedCommanded = self.currentTranslateMag * math.sin(self.currentTranslationDir)
+            xSpeedCommanded = self.currentTranslationMag * math.cos(self.currentTranslationDir)
+            ySpeedCommanded = self.currentTranslationMag * math.sin(self.currentTranslationDir)
             self.currentRotation = self.rotLimiter.calculate(rot)
         else:
             xSpeedCommanded = xSpeed
