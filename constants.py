@@ -75,8 +75,8 @@ kTurningFF = 0
 kTurningMinOutput = -1
 kTurningMaxOutput = 1
 
-kDrivingMotorIdleMode: rev.CANSparkMax.IdleMode = rev.CANSparkMax.IdleMode.kBrake
-kTurningMotorIdleMode: rev.CANSparkMax.IdleMode = rev.CANSparkMax.IdleMode.kBrake
+kDrivingMotorIdleMode: rev.CANSparkMax.IdleMode = rev.CANSparkMax.IdleMode.kCoast
+kTurningMotorIdleMode: rev.CANSparkMax.IdleMode = rev.CANSparkMax.IdleMode.kCoast
 
 kDrivingMotorCurrentLimit = 50 # Amps
 kTurningMotorCurrentLimit = 20 # Amps
@@ -96,6 +96,3 @@ kThetaControllerConstraints = wpimath.trajectory.TrapezoidProfile.Constraints(kM
 """ OI Constants """
 kDriverControllerPort = 0
 kDriveDeadband = 0.08
-
-
-
