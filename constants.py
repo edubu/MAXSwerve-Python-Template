@@ -95,6 +95,7 @@ kThetaControllerConstraints = wpimath.trajectory.TrapezoidProfile.Constraints(kM
 
 """ OI Constants """
 kDriverControllerPort = 0
+kShooterControllerPort = 1
 kDriveDeadband = 0.08
 
 

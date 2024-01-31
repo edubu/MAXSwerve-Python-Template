@@ -7,6 +7,9 @@ import navx
 import drivesubsystem
 import networklogger
 
+import constants
+import controlsubsystem
+
 # To see messages from networktables, you must setup logging
 import logging
 
@@ -15,7 +18,9 @@ logging.basicConfig(level=logging.DEBUG)
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         """Robot initialization function"""
-        self.controller = wpilib.XboxController(0)
+        self.driverController = wpilib.XboxController(constants.kDriverControllerPort)
+        self.shooterController = wpilib.XboxController(constants.kShooterControllerPort)
+        self.controlSystem = controlsubsystem.ControlSubsystem()
         self.swerve = drivesubsystem.DriveSubsystem()
         self.networklogger = networklogger.NetworkLogger()
 
@@ -62,7 +67,7 @@ class MyRobot(wpilib.TimedRobot):
         # negative values when we push forward.
         xSpeed = (
             -self.xspeedLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getLeftY(), 0.08)
+                wpimath.applyDeadband(self.driverController.getLeftY(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
@@ -72,7 +77,7 @@ class MyRobot(wpilib.TimedRobot):
         # return positive values when you pull to the right by default.
         ySpeed = (
             -self.yspeedLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getLeftX(), 0.08)
+                wpimath.applyDeadband(self.driverController.getLeftX(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
@@ -83,7 +88,7 @@ class MyRobot(wpilib.TimedRobot):
         # the right by default.
         rot = (
             -self.rotLimiter.calculate(
-                wpimath.applyDeadband(self.controller.getRightX(), 0.08)
+                wpimath.applyDeadband(self.driverController.getRightX(), 0.08)
             )
             # * drivesubsystem.kMaxSpeed
         )
