@@ -5,10 +5,8 @@ import wpimath.filter
 import wpimath.controller
 import navx
 import drivesubsystem
-import networklogger
 
 import constants
-import controlsubsystem
 
 # To see messages from networktables, you must setup logging
 import logging
@@ -19,44 +17,26 @@ class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         """Robot initialization function"""
         self.driverController = wpilib.XboxController(constants.kDriverControllerPort)
-        self.shooterController = wpilib.XboxController(constants.kShooterControllerPort)
-        self.controlSystem = controlsubsystem.ControlSubsystem()
         self.swerve = drivesubsystem.DriveSubsystem()
-        self.networklogger = networklogger.NetworkLogger()
 
         # Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
         self.xspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         self.yspeedLimiter = wpimath.filter.SlewRateLimiter(3)
         self.rotLimiter = wpimath.filter.SlewRateLimiter(3)
-
-        self.logTimer = wpilib.Timer()
-        self.logging_rate = 20 # Hz
     
     def autonomousInit(self) -> None:
         pass
 
     def autonomousPeriodic(self) -> None:
-        # self.driveWithJoystick(False)
-        # self.swerve.updateOdometry()
         pass
 
     def teleopInit(self) -> None:
-        # start logging timer
-        self.logTimer.start()
+        pass
     
 
     def teleopPeriodic(self) -> None:
         # Teleop periodic logic
         self.driveWithJoystick(True)
-        
-        # Logic to limit PERIODIC EVENTS
-        # if self.logTimer.advanceIfElapsed(1.0/self.logging_rate):
-        self.swerve.periodic()
-        self.networklogger.log_controller(self.controller)
-
-        # # restart timer
-        # self.logTimer.reset()
-
         
     
     def testPeriodic(self) -> None:

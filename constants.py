@@ -14,7 +14,6 @@ kMagnitudeSlewRate = 1.8 # percent per second (1 = 100%)
 kRotationalSlewRate = 2.0 # percent per second (1 = 100%)
 
 # Chassis configuration
-# TODO: Set the chassis configuration for new build
 kTrackWidth = 0.6953 # Distance between centers of right and left wheels on robot METERS
 kWheelBase = 0.6953 # Distance between centers of front and back wheels on robot METERS
 
@@ -95,7 +94,6 @@ kThetaControllerConstraints = wpimath.trajectory.TrapezoidProfile.Constraints(kM
 
 """ OI Constants """
 kDriverControllerPort = 0
-kShooterControllerPort = 1
 kDriveDeadband = 0.08
 
 
